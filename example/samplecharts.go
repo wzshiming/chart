@@ -729,23 +729,6 @@ func logAxis() {
 	lc.YRange.Min, lc.YRange.Max = 0, 0
 	dumper.Plot(&lc)
 
-	lc.Title = "Lin / Log"
-	lc.XRange.Log, lc.YRange.Log = false, true
-	lc.XRange.Min, lc.XRange.Max, lc.XRange.TicSetting.Delta = 0, 0, 0
-	lc.YRange.Min, lc.YRange.Max, lc.YRange.TicSetting.Delta = 0, 0, 0
-	dumper.Plot(&lc)
-
-	lc.Title = "Log / Lin"
-	lc.XRange.Log, lc.YRange.Log = true, false
-	lc.XRange.Min, lc.XRange.Max, lc.XRange.TicSetting.Delta = 0, 0, 0
-	lc.YRange.Min, lc.YRange.Max, lc.YRange.TicSetting.Delta = 0, 0, 0
-	dumper.Plot(&lc)
-
-	lc.Title = "Log / Log"
-	lc.XRange.Log, lc.YRange.Log = true, true
-	lc.XRange.Min, lc.XRange.Max, lc.XRange.TicSetting.Delta = 0, 0, 0
-	lc.YRange.Min, lc.YRange.Max, lc.YRange.TicSetting.Delta = 0, 0, 0
-	dumper.Plot(&lc)
 }
 
 //
@@ -1150,7 +1133,6 @@ func bestOf() {
 	log.Key.Hide = true
 	log.XRange.MinMode.Expand, log.XRange.MaxMode.Expand = chart.ExpandToTic, chart.ExpandToTic
 	log.YRange.MinMode.Expand, log.YRange.MaxMode.Expand = chart.ExpandToTic, chart.ExpandToTic
-	log.XRange.Log, log.YRange.Log = true, true
 	charts = append(charts, &log)
 
 	// Stacked Histograms
