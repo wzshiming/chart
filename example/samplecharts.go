@@ -7,7 +7,6 @@ import (
 	"image/color"
 	"image/draw"
 	"image/png"
-	"log"
 	"math"
 	"math/rand"
 	"os"
@@ -1504,8 +1503,6 @@ func mietenChart() {
 //  Main
 //
 func main() {
-	var debugging = flag.Bool("debug", false, "output debug information to stderr")
-
 	var All *bool = flag.Bool("All", false, "show everything")
 	var all *bool = flag.Bool("all", false, "show all basic chart types")
 	var catBar *bool = flag.Bool("cat", false, "show categorical bar charts")
@@ -1530,9 +1527,6 @@ func main() {
 	var test *bool = flag.Bool("test", false, "produce graphic test")
 
 	flag.Parse()
-	if *debugging {
-		chart.DebugLogger = log.New(os.Stdout, "", log.LstdFlags)
-	}
 
 	if *All {
 		*all = true
