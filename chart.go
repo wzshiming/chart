@@ -90,7 +90,6 @@ type Tic struct {
 // Range encapsulates all information about an axis.
 type Range struct {
 	Label            string     // Label of axis
-	Log              bool       // Logarithmic axis?
 	MinMode, MaxMode RangeMode  // How to handel min and max of this axis/range
 	TicSetting       TicSetting // How to handle tics.
 	DataMin, DataMax float64    // Actual min/max values from data. If both zero: not calculated
@@ -224,7 +223,7 @@ func almostEqual(a, b, d float64) bool {
 // if upper is true. To allow proper rounding to tic (depending on desired RangeMode)
 // the ticDelta has to be provided. Logaritmic axis are selected by log = true and ticDelta
 // is ignored: Tics are of the form 1*10^n.
-func applyRangeMode(mode RangeMode, val, ticDelta float64, upper, log bool) float64 {
+func applyRangeMode(mode RangeMode, val, ticDelta float64, upper bool) float64 {
 	if mode.Fixed {
 		return mode.Value
 	}
@@ -240,55 +239,27 @@ func applyRangeMode(mode RangeMode, val, ticDelta float64, upper, log bool) floa
 	case ExpandToTic, ExpandNextTic:
 		var v float64
 		if upper {
-			if log {
-				v = math.Pow10(int(math.Ceil(math.Log10(val))))
-			} else {
-				v = math.Ceil(val/ticDelta) * ticDelta
-			}
+			v = math.Ceil(val/ticDelta) * ticDelta
 		} else {
-			if log {
-				v = math.Pow10(int(math.Floor(math.Log10(val))))
-			} else {
-				v = math.Floor(val/ticDelta) * ticDelta
-			}
+			v = math.Floor(val/ticDelta) * ticDelta
 		}
 		if mode.Expand == ExpandNextTic {
 			if upper {
-				if log {
-					if val/v < 2 { // TODO(vodo) use ExpandABitFraction
-						v *= ticDelta
-					}
-				} else {
-					if almostEqual(v, val, ticDelta/15) {
-						v += ticDelta
-					}
+				if almostEqual(v, val, ticDelta/15) {
+					v += ticDelta
 				}
 			} else {
-				if log {
-					if v/val > 7 { // TODO(vodo) use ExpandABitFraction
-						v /= ticDelta
-					}
-				} else {
-					if almostEqual(v, val, ticDelta/15) {
-						v -= ticDelta
-					}
+				if almostEqual(v, val, ticDelta/15) {
+					v -= ticDelta
 				}
 			}
 		}
 		val = v
 	case ExpandABit:
 		if upper {
-			if log {
-				val *= math.Pow(10, ExpandABitFraction)
-			} else {
-				val += ticDelta * ExpandABitFraction
-			}
+			val += ticDelta * ExpandABitFraction
 		} else {
-			if log {
-				val /= math.Pow(10, ExpandABitFraction)
-			} else {
-				val -= ticDelta * ExpandABitFraction
-			}
+			val -= ticDelta * ExpandABitFraction
 		}
 	}
 
@@ -297,10 +268,6 @@ func applyRangeMode(mode RangeMode, val, ticDelta float64, upper, log bool) floa
 
 // Determine appropriate tic delta for normal (non dat/time) axis from desired delta and minimal delta.
 func (r *Range) fDelta(delta, mindelta float64) float64 {
-	if r.Log {
-		return 10
-	}
-
 	// Set up nice tic delta of the form 1,2,5 * 10^n
 	// TODO: deltas of 25 and 250 would be suitable too...
 	de := math.Pow10(int(math.Floor(math.Log10(delta))))
@@ -341,8 +308,8 @@ func (r *Range) fSetup(desiredNumberOfTics, maxNumberOfTics int, delta, mindelta
 		r.TicSetting.UserDelta = false
 	}
 
-	r.Min = applyRangeMode(r.MinMode, r.DataMin, delta, false, r.Log)
-	r.Max = applyRangeMode(r.MaxMode, r.DataMax, delta, true, r.Log)
+	r.Min = applyRangeMode(r.MinMode, r.DataMin, delta, false)
+	r.Max = applyRangeMode(r.MaxMode, r.DataMax, delta, true)
 	r.TicSetting.Delta = delta
 
 	formater := FmtFloat
@@ -350,46 +317,34 @@ func (r *Range) fSetup(desiredNumberOfTics, maxNumberOfTics int, delta, mindelta
 		formater = r.TicSetting.Format
 	}
 
-	if r.Log {
-		x := math.Pow10(int(math.Ceil(math.Log10(r.Min))))
-		last := math.Pow10(int(math.Floor(math.Log10(r.Max))))
-		r.Tics = make([]Tic, 0, maxNumberOfTics)
-		for ; x <= last; x = x * delta {
-			t := Tic{Pos: x, LabelPos: x, Label: formater(x)}
-			r.Tics = append(r.Tics, t)
-			// fmt.Printf("%v\n", t)
+	if len(r.Category) > 0 {
+		r.Tics = make([]Tic, len(r.Category))
+		for i, c := range r.Category {
+			x := float64(i)
+			if x < r.Min {
+				continue
+			}
+			if x > r.Max {
+				break
+			}
+			r.Tics[i].Pos = math.NaN() // no tic
+			r.Tics[i].LabelPos = x
+			r.Tics[i].Label = c
 		}
 
 	} else {
-		if len(r.Category) > 0 {
-			r.Tics = make([]Tic, len(r.Category))
-			for i, c := range r.Category {
-				x := float64(i)
-				if x < r.Min {
-					continue
-				}
-				if x > r.Max {
-					break
-				}
-				r.Tics[i].Pos = math.NaN() // no tic
-				r.Tics[i].LabelPos = x
-				r.Tics[i].Label = c
-			}
+		// normal numeric axis
+		first := delta * math.Ceil(r.Min/delta)
+		num := int(-first/delta + math.Floor(r.Max/delta) + 1.5)
 
-		} else {
-			// normal numeric axis
-			first := delta * math.Ceil(r.Min/delta)
-			num := int(-first/delta + math.Floor(r.Max/delta) + 1.5)
-
-			// Set up tics
-			r.Tics = make([]Tic, num)
-			for i, x := 0, first; i < num; i, x = i+1, x+delta {
-				r.Tics[i].Pos, r.Tics[i].LabelPos = x, x
-				r.Tics[i].Label = formater(x)
-			}
+		// Set up tics
+		r.Tics = make([]Tic, num)
+		for i, x := 0, first; i < num; i, x = i+1, x+delta {
+			r.Tics[i].Pos, r.Tics[i].LabelPos = x, x
+			r.Tics[i].Label = formater(x)
 		}
-		// TODO(vodo) r.ShowLimits = true
 	}
+	// TODO(vodo) r.ShowLimits = true
 }
 
 // Setup several fields of the Range r according to RangeModes and TicSettings.
@@ -423,13 +378,8 @@ func (r *Range) Setup(desiredNumberOfTics, maxNumberOfTics, sWidth, sOffset int,
 
 	r.fSetup(desiredNumberOfTics, maxNumberOfTics, delta, mindelta)
 
-	if r.Log {
-		r.Norm = func(x float64) float64 { return math.Log10(x/r.Min) / math.Log10(r.Max/r.Min) }
-		r.InvNorm = func(f float64) float64 { return (r.Max-r.Min)*f + r.Min }
-	} else {
-		r.Norm = func(x float64) float64 { return (x - r.Min) / (r.Max - r.Min) }
-		r.InvNorm = func(f float64) float64 { return (r.Max-r.Min)*f + r.Min }
-	}
+	r.Norm = func(x float64) float64 { return (x - r.Min) / (r.Max - r.Min) }
+	r.InvNorm = func(f float64) float64 { return (r.Max-r.Min)*f + r.Min }
 
 	if !revert {
 		r.Data2Screen = func(x float64) int {
@@ -445,9 +395,7 @@ func (r *Range) Setup(desiredNumberOfTics, maxNumberOfTics, sWidth, sOffset int,
 		r.Screen2Data = func(x int) float64 {
 			return r.InvNorm(float64(-x+sOffset+sWidth) / float64(sWidth))
 		}
-
 	}
-
 }
 
 // LayoutData encapsulates the layout of the graph area in the whole drawing area.
