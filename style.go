@@ -134,14 +134,26 @@ func (d *Style) empty() bool {
 }
 
 // Standard colors used by AutoStyle
-var StandardColors = []color.Color{
-	color.NRGBA{0xcc, 0x00, 0x00, 0xff}, // red
-	color.NRGBA{0x00, 0xbb, 0x00, 0xff}, // green
-	color.NRGBA{0x00, 0x00, 0xdd, 0xff}, // blue
-	color.NRGBA{0x99, 0x66, 0x00, 0xff}, // brown
-	color.NRGBA{0xbb, 0x00, 0xbb, 0xff}, // violet
-	color.NRGBA{0x00, 0xaa, 0xaa, 0xff}, // turquise
-	color.NRGBA{0xbb, 0xbb, 0x00, 0xff}, // yellow
+var StandardColors = []color.Color{}
+
+func init() {
+	standardColors := []color.Color{
+		color.NRGBA{0x43, 0x85, 0xf4, 0xff},
+		color.NRGBA{0xea, 0x44, 0x35, 0xff},
+		color.NRGBA{0xa3, 0x7f, 0xe2, 0xff},
+		color.NRGBA{0xfb, 0xbc, 0x03, 0xff},
+		color.NRGBA{0x33, 0xa8, 0x54, 0xff},
+		color.NRGBA{0xff, 0x6d, 0x04, 0xff},
+		color.NRGBA{0x47, 0xbd, 0xc6, 0xff},
+	}
+
+	StandardColors = append(StandardColors, standardColors...)
+	for _, color := range standardColors {
+		StandardColors = append(StandardColors, lighter(color, 0.3))
+	}
+	for _, color := range standardColors {
+		StandardColors = append(StandardColors, lighter(color, 0.7))
+	}
 }
 
 // Standard line styles used by AutoStyle (fill=false)
@@ -149,9 +161,6 @@ var StandardLineStyles = []LineStyle{SolidLine, DashedLine, DottedLine, LongDash
 
 // Standard symbols used by AutoStyle
 var StandardSymbols = []int{'o', '=', '%', '&', '+', 'X', '*', '@', '#', 'A', 'Z'}
-
-// How much brighter/darker filled elements become.
-var StandardFillFactor = 0.5
 
 // AutoStyle produces a styles based on StandardColors, StandardLineStyles, and StandardSymbols.
 // Call with fill = true for charts with filled elements (hist, bar, cbar, pie).
@@ -168,14 +177,11 @@ func AutoStyle(i int, fill bool) (style Style) {
 	style.SymbolSize = 1
 
 	if fill {
-		style.LineStyle = SolidLine
-		style.LineWidth = 3
-		if i < nc {
-			style.FillColor = lighter(style.LineColor, StandardFillFactor)
-		} else if i <= 2*nc {
-			style.FillColor = darker(style.LineColor, StandardFillFactor)
-		} else {
+		if n := i / nc; n > 0 {
 			style.FillColor = style.LineColor
+			style.LineColor = darker(style.LineColor, 0.01*float64(n))
+			style.LineStyle = SolidLine
+			style.LineWidth = 3
 		}
 	} else {
 		style.LineStyle = StandardLineStyles[li]
