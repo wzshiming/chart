@@ -190,13 +190,7 @@ func drawXTics(bg BasicGraphics, rng Range, y, ym, ticLen int, options PlotOptio
 		}
 
 		if !rng.TicSetting.HideLabels {
-			// Tic-Label
-			if rng.Time && tic.Align == -1 {
-				bg.Line(x, y+ticLen, x, y+2*ticLen, ticstyle)
-				bg.Text(lx, y+2*ticLen, tic.Label, "tl", 0, ticfont)
-			} else {
-				bg.Text(lx, y+2*ticLen, tic.Label, "tc", 0, ticfont)
-			}
+			bg.Text(lx, y+2*ticLen, tic.Label, "tc", 0, ticfont)
 		}
 	}
 }
@@ -218,13 +212,8 @@ func GenericXAxis(bg BasicGraphics, rng Range, y, ym int, options PlotOptions) {
 	}
 	if rng.ShowLimits {
 		font := elementStyle(options, RangeLimitElement).Font
-		if rng.Time {
-			bg.Text(xa, aly, rng.TMin.Format("2006-01-02 15:04:05"), "tl", 0, font)
-			bg.Text(xe, aly, rng.TMax.Format("2006-01-02 15:04:05"), "tr", 0, font)
-		} else {
-			bg.Text(xa, aly, fmt.Sprintf("%g", rng.Min), "tl", 0, font)
-			bg.Text(xe, aly, fmt.Sprintf("%g", rng.Max), "tr", 0, font)
-		}
+		bg.Text(xa, aly, fmt.Sprintf("%g", rng.Min), "tl", 0, font)
+		bg.Text(xe, aly, fmt.Sprintf("%g", rng.Max), "tr", 0, font)
 	}
 	if rng.Label != "" { // draw label _after_ (=over) range limits
 		font := elementStyle(options, MajorAxisElement).Font
@@ -303,16 +292,9 @@ func drawYTics(bg BasicGraphics, rng Range, x, xm, ticLen int, options PlotOptio
 		}
 
 		if !rng.TicSetting.HideLabels {
-			// Label
-			if rng.Time && tic.Align == 0 { // centered tic
-				bg.Line(x-2*ticLen, y, x+ticLen, y, ticstyle)
-				bg.Text(x-ticLen, ly, tic.Label, "cr", 0, ticfont)
-			} else {
-				bg.Text(x-2*ticLen, ly, tic.Label, "cr", 0, ticfont)
-			}
+			bg.Text(x-2*ticLen, ly, tic.Label, "cr", 0, ticfont)
 		}
 	}
-
 }
 
 // GenericYAxis draws the y-axis with the range rng solely by graphic primitives of bg.
@@ -331,13 +313,8 @@ func GenericYAxis(bg BasicGraphics, rng Range, x, xm int, options PlotOptions) {
 	if rng.ShowLimits {
 		/* TODO
 		st := bg.Style("rangelimit")
-		if rng.Time {
-			bg.Text(xa, aly, rng.TMin.Format("2006-01-02 15:04:05"), "tl", 0, st)
-			bg.Text(xe, aly, rng.TMax.Format("2006-01-02 15:04:05"), "tr", 0, st)
-		} else {
-			bg.Text(xa, aly, fmt.Sprintf("%g", rng.Min), "tl", 0, st)
-			bg.Text(xe, aly, fmt.Sprintf("%g", rng.Max), "tr", 0, st)
-		}
+		bg.Text(xa, aly, fmt.Sprintf("%g", rng.Min), "tl", 0, st)
+		bg.Text(xe, aly, fmt.Sprintf("%g", rng.Max), "tr", 0, st)
 		*/
 	}
 	if rng.Label != "" {

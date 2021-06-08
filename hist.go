@@ -19,7 +19,6 @@ type HistChart struct {
 	Shifted        bool        // Shift non-stacked bars sideways (and make them smaler)
 	FirstBin       float64     // center of the first (lowest bin)
 	BinWidth       float64     // Width of bins (0: auto)
-	TBinWidth      TimeDelta   // BinWidth for time XRange
 	Gap            float64     // gap between bins in (bin-width units): 0<=Gap<1,
 	Sep            float64     // separation of bars in one bin (in bar width units) -1<Sep<1
 	Kernel         Kernel      // Smoothing kernel (usable only for non-stacked histograms)

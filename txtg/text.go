@@ -2,8 +2,9 @@ package txtg
 
 import (
 	"fmt"
-	"github.com/vdobler/chart"
 	"math"
+
+	"github.com/vdobler/chart"
 )
 
 // TextGraphics
@@ -162,36 +163,17 @@ func (g *TextGraphics) XAxis(xrange chart.Range, y, y1 int, options chart.PlotOp
 			x = -1
 		}
 		lx := xrange.Data2Screen(tic.LabelPos)
-		if xrange.Time {
-			if x != -1 {
-				g.tb.Put(x, y, '|')
-				if mirror >= 2 {
-					g.tb.Put(x, y1, '|')
-				}
-				g.tb.Put(x, y+1, '|')
+
+		if x != -1 {
+			g.tb.Put(x, y, '+')
+			if mirror >= 2 {
+				g.tb.Put(x, y1, '+')
 			}
-			if tic.Align == -1 {
-				g.tb.Text(lx+1, y+1, tic.Label, -1)
-			} else {
-				g.tb.Text(lx, y+1, tic.Label, 0)
-			}
-		} else {
-			if x != -1 {
-				g.tb.Put(x, y, '+')
-				if mirror >= 2 {
-					g.tb.Put(x, y1, '+')
-				}
-			}
-			g.tb.Text(lx, y+1, tic.Label, 0)
 		}
+		g.tb.Text(lx, y+1, tic.Label, 0)
 		if xrange.ShowLimits {
-			if xrange.Time {
-				g.tb.Text(xa, y+2, xrange.TMin.Format("2006-01-02 15:04:05"), -1)
-				g.tb.Text(xe, y+2, xrange.TMax.Format("2006-01-02 15:04:05"), 1)
-			} else {
-				g.tb.Text(xa, y+2, fmt.Sprintf("%g", xrange.Min), -1)
-				g.tb.Text(xe, y+2, fmt.Sprintf("%g", xrange.Max), 1)
-			}
+			g.tb.Text(xa, y+2, fmt.Sprintf("%g", xrange.Min), -1)
+			g.tb.Text(xe, y+2, fmt.Sprintf("%g", xrange.Max), 1)
 		}
 	}
 }
@@ -220,23 +202,11 @@ func (g *TextGraphics) YAxis(yrange chart.Range, x, x1 int, options chart.PlotOp
 	for _, tic := range yrange.Tics {
 		y := yrange.Data2Screen(tic.Pos)
 		ly := yrange.Data2Screen(tic.LabelPos)
-		if yrange.Time {
-			g.tb.Put(x, y, '+')
-			if mirror >= 2 {
-				g.tb.Put(x1, y, '+')
-			}
-			if tic.Align == 0 { // centered tic
-				g.tb.Put(x-1, y, '-')
-				g.tb.Put(x-2, y, '-')
-			}
-			g.tb.Text(x, ly, tic.Label+" ", 1)
-		} else {
-			g.tb.Put(x, y, '+')
-			if mirror >= 2 {
-				g.tb.Put(x1, y, '+')
-			}
-			g.tb.Text(x-2, ly, tic.Label, 1)
+		g.tb.Put(x, y, '+')
+		if mirror >= 2 {
+			g.tb.Put(x1, y, '+')
 		}
+		g.tb.Text(x-2, ly, tic.Label, 1)
 	}
 }
 

@@ -14,7 +14,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/ajstarks/svgo"
+	svg "github.com/ajstarks/svgo"
 	"github.com/vdobler/chart"
 	"github.com/vdobler/chart/imgg"
 	"github.com/vdobler/chart/svgg"
@@ -1227,7 +1227,6 @@ func bestOf() {
 	charts = append(charts, &bar)
 	// Time axis
 	tdc := chart.ScatterChart{Title: "Crop Growth"}
-	tdc.XRange.Time, tdc.YRange.Time = true, true
 	tdc.XRange.Label, tdc.YRange.Label = "Seeding", "Harvesting"
 	tdc.XRange.TicSetting.Mirror, tdc.YRange.TicSetting.Mirror = 1, 1
 	tdc.XRange.TicSetting.Grid, tdc.YRange.TicSetting.Grid = 1, 1
@@ -1308,7 +1307,7 @@ func timeRange() {
 		fmt.Printf("\nStep %d seconds (approx %d hours or %d weeks or %d years)\n",
 			int64(step), int64(step/3600+0.5), int64(step/(3600*24*7)+0.5),
 			int(step/(3600*24*365.25)+0.5))
-		rng := chart.Range{Time: true}
+		rng := chart.Range{}
 		rng.Init()
 		rng.DataMin, rng.DataMax = now, now+step
 		rng.Setup(7, 9, 90, 5, false)
