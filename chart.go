@@ -2,8 +2,6 @@ package chart
 
 import (
 	"fmt"
-	"io/ioutil"
-	"log"
 	"math"
 	"time"
 )
@@ -521,7 +519,6 @@ func (r *Range) fDelta(delta, mindelta float64) float64 {
 	}
 	delta = f * de
 	if delta < mindelta {
-		DebugLogger.Printf("Redoing delta: %g < %g", delta, mindelta)
 		// recalculate tic delta
 		switch f {
 		case 1, 5:
@@ -537,8 +534,6 @@ func (r *Range) fDelta(delta, mindelta float64) float64 {
 
 // Set up normal (=non date/time axis)
 func (r *Range) fSetup(desiredNumberOfTics, maxNumberOfTics int, delta, mindelta float64) {
-	DebugLogger.Printf("Data: [ %.5g : %.5g ] --> delta/mindelta = %.3g/%.3g (desired %d/max %d)\n",
-		r.DataMin, r.DataMax, delta, mindelta, desiredNumberOfTics, maxNumberOfTics)
 	if r.TicSetting.Delta != 0 {
 		delta = r.TicSetting.Delta
 		r.TicSetting.UserDelta = true
@@ -551,9 +546,6 @@ func (r *Range) fSetup(desiredNumberOfTics, maxNumberOfTics int, delta, mindelta
 	r.Max = applyRangeMode(r.MaxMode, r.DataMax, delta, true, r.Log)
 	r.TicSetting.Delta = delta
 
-	DebugLogger.Printf("DataRange:  %.6g  TO  %.6g", r.DataMin, r.DataMax)
-	DebugLogger.Printf("AxisRange:  %.6g  TO  %.6g", r.Min, r.Max)
-
 	formater := FmtFloat
 	if r.TicSetting.Format != nil {
 		formater = r.TicSetting.Format
@@ -562,7 +554,6 @@ func (r *Range) fSetup(desiredNumberOfTics, maxNumberOfTics int, delta, mindelta
 	if r.Log {
 		x := math.Pow10(int(math.Ceil(math.Log10(r.Min))))
 		last := math.Pow10(int(math.Floor(math.Log10(r.Max))))
-		DebugLogger.Printf("TicsRange:  %.6g  TO  %.6g  Factor  %.6g", x, last, delta)
 		r.Tics = make([]Tic, 0, maxNumberOfTics)
 		for ; x <= last; x = x * delta {
 			t := Tic{Pos: x, LabelPos: x, Label: formater(x)}
@@ -572,7 +563,6 @@ func (r *Range) fSetup(desiredNumberOfTics, maxNumberOfTics int, delta, mindelta
 
 	} else {
 		if len(r.Category) > 0 {
-			DebugLogger.Printf("TicsRange:  %d categorical tics.", len(r.Category))
 			r.Tics = make([]Tic, len(r.Category))
 			for i, c := range r.Category {
 				x := float64(i)
@@ -591,7 +581,6 @@ func (r *Range) fSetup(desiredNumberOfTics, maxNumberOfTics int, delta, mindelta
 			// normal numeric axis
 			first := delta * math.Ceil(r.Min/delta)
 			num := int(-first/delta + math.Floor(r.Max/delta) + 1.5)
-			DebugLogger.Printf("TicsRange:  %.6g  TO  %.6g  Step  %.6g", first, first+float64(num)*delta, delta)
 
 			// Set up tics
 			r.Tics = make([]Tic, num)
@@ -788,6 +777,3 @@ func layout(g Graphics, title, xlabel, ylabel string, hidextics, hideytics bool,
 
 	return
 }
-
-// DebugLogger is used to log some information about the chart generation.
-var DebugLogger *log.Logger = log.New(ioutil.Discard, "", 0)

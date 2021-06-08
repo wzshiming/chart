@@ -687,9 +687,6 @@ func GenericRings(bg BasicGraphics, wedges []Wedgeinfo, x, y, ro, ri int, eccent
 		shift := float64(w.Shift)
 		kx, ky := (k+shift)*math.Cos(gamma), (k+shift)*math.Sin(gamma)
 
-		DebugLogger.Printf("Center adjustment (lw=%d, d=%.2f), for wedge %d°-%d° of (%.1f,%.1f), k=%.1f",
-			w.Style.LineWidth, d, int(180*w.Phi/math.Pi), int(180*w.Psi/math.Pi), kx, ky, k)
-
 		xi, yi := x+int(kx+0.5), y+int(ky+0.5)
 		roc, ric := ro-int(d+k), ri-int(d+k)
 		bg.Wedge(xi, yi, roc, ric, w.Phi, w.Psi, w.Style)
