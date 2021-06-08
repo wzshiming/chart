@@ -13,11 +13,12 @@ import (
 // Stacking is on a "both bars have _identical_ x values" basis.
 type BarChart struct {
 	XRange, YRange Range
-	Title          string      // Title of the chart
-	Key            Key         // Key/Legend
-	Horizontal     bool        // Display as horizontal bars (unimplemented)
-	Stacked        bool        // Display different data sets ontop of each other (default is side by side)
-	ShowVal        int         // Display values: 0: don't show; 1: above bar, 2: centerd in bar; 3: at top of bar
+	Title          string // Title of the chart
+	Key            Key    // Key/Legend
+	Horizontal     bool   // Display as horizontal bars (unimplemented)
+	Stacked        bool   // Display different data sets ontop of each other (default is side by side)
+	ShowVal        int    // Display values: 0: don't show; 1: above bar, 2: centerd in bar; 3: at top of bar
+	ShowValFormat  func(float64) string
 	SameBarWidth   bool        // all data sets use the same (smalest of all data sets) bar width
 	BarWidthFac    float64     // if nonzero: scale determined bar width with this factor
 	Options        PlotOptions // visual apperance, nil to use DefaultOptions
@@ -339,7 +340,9 @@ func (c *BarChart) addLabel(bar *Barinfo, y float64) {
 	}
 
 	var sval string
-	if c.YRange.TicSetting.Format != nil {
+	if c.ShowValFormat != nil {
+		sval = c.ShowValFormat(y)
+	} else if c.YRange.TicSetting.Format != nil {
 		sval = c.YRange.TicSetting.Format(y)
 	} else if math.Abs(y) >= 100 {
 		sval = fmt.Sprintf("%d", int(y+0.5))
