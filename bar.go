@@ -344,7 +344,7 @@ func (c *BarChart) addLabel(bar *Barinfo, y float64) {
 		sval = c.ShowValFormat(y)
 	} else if c.YRange.TicSetting.Format != nil {
 		sval = c.YRange.TicSetting.Format(y)
-	}else if math.Abs(y) >= 100 {
+	} else if math.Abs(y) >= 100 {
 		sval = fmt.Sprintf("%d", int(y+0.5))
 	} else if math.Abs(y) >= 10 {
 		sval = fmt.Sprintf("%.1f", y)
