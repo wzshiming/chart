@@ -14,10 +14,10 @@ import (
 	"time"
 
 	svg "github.com/ajstarks/svgo"
-	"github.com/vdobler/chart"
-	"github.com/vdobler/chart/imgg"
-	"github.com/vdobler/chart/svgg"
-	"github.com/vdobler/chart/txtg"
+	"github.com/wzshiming/chart"
+	"github.com/wzshiming/chart/imgg"
+	"github.com/wzshiming/chart/svgg"
+	"github.com/wzshiming/chart/txtg"
 )
 
 var (

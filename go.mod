@@ -1,4 +1,4 @@
-module github.com/vdobler/chart
+module github.com/wzshiming/chart
 
 go 1.16
 

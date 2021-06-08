@@ -5,8 +5,8 @@ import (
 	"image/color"
 	"math"
 
-	"github.com/ajstarks/svgo"
-	"github.com/vdobler/chart"
+	svg "github.com/ajstarks/svgo"
+	"github.com/wzshiming/chart"
 )
 
 // SvgGraphics implements BasicGraphics and uses the generic implementations

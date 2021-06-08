@@ -1,7 +1,7 @@
 include $(GOROOT)/src/Make.inc
 
 
-TARG=github.com/vdobler/chart
+TARG=github.com/wzshiming/chart
 GOFILES=\
 	chart.go\
 	data.go\

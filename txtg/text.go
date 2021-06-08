@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/vdobler/chart"
+	"github.com/wzshiming/chart"
 )
 
 // TextGraphics

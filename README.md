@@ -10,7 +10,7 @@ ready charts.
 
 ## Examples
 
-![Some nice charts](https://github.com/vdobler/chart/raw/master/example/bestof.png)
+![Some nice charts](https://github.com/wzshiming/chart/raw/master/example/bestof.png)
 
 
 ## Chart Types

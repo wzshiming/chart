@@ -8,7 +8,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/vdobler/chart"
+	"github.com/wzshiming/chart"
 )
 
 func marker(i *image.RGBA, x, y int) {
