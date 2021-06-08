@@ -1,13 +1,14 @@
 package imgg
 
 import (
-	"github.com/vdobler/chart"
 	"image"
 	"image/color"
 	"image/png"
 	"log"
 	"os"
 	"testing"
+
+	"github.com/vdobler/chart"
 )
 
 func marker(i *image.RGBA, x, y int) {
@@ -22,7 +23,7 @@ func marker(i *image.RGBA, x, y int) {
 }
 
 func TestText(t *testing.T) {
-	g := New(400, 200, color.RGBA{220, 220, 220, 255}, nil, 12)
+	g := New(400, 200, color.RGBA{220, 220, 220, 255}, nil, ConstructFontSizes(12))
 	g.Text(2, 2, "Hallo (tl)", "tl", 0, chart.Font{})
 	g.Text(200, 2, "schöne (tc)", "tc", 0, chart.Font{})
 	g.Text(398, 2, "Welt (tr)", "tr", 0, chart.Font{})
